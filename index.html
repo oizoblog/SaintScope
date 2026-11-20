@@ -1,1 +1,80 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#173047"><meta name="description" content="Explorer les saints et leurs attributs dans l'art chrétien"><link rel="manifest" href="manifest.webmanifest"><title>SaintScope — Guide iconographique</title><style>:root{font-family:system-ui,-apple-system,sans-serif;color:#173047;background:#f6f4ef}*{box-sizing:border-box}body{margin:0}header{background:#173047;color:#fff;padding:28px 20px 22px;text-align:center}h1{margin:0;font-size:2rem;letter-spacing:.03em}header p{margin:8px 0 0;color:#d8e4ed}main{max-width:760px;margin:auto;padding:16px 16px 70px}.card{background:white;border-radius:18px;padding:20px;margin:0 0 16px;box-shadow:0 4px 18px #102b4210}h2{font-size:1.22rem;margin:0 0 12px}p{line-height:1.55}.buttons{display:flex;flex-wrap:wrap;gap:10px}.btn,.filebtn{display:inline-block;background:#205a77;color:white;padding:12px 15px;border-radius:11px;border:0;font:inherit;font-weight:600;cursor:pointer}.btn.secondary{background:#e9eff3;color:#173047}.filebtn input{display:none}#preview{display:block;max-width:100%;max-height:380px;margin:16px auto;border-radius:12px}#preview[hidden]{display:none}.hint{color:#526575;font-size:.9rem}.notice{background:#fff5dc;padding:12px;border-radius:10px;font-size:.9rem}input[type=search]{width:100%;padding:13px;border:1px solid #b9c8d2;border-radius:10px;font:inherit}fieldset{border:0;padding:0;margin:14px 0}legend{font-weight:650;margin-bottom:8px}.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{background:#f2f6f8;border:1px solid #b9c8d2;border-radius:99px;padding:9px 12px;font:inherit;cursor:pointer}.chip[aria-pressed=true]{background:#173047;color:white;border-color:#173047}.result{border-top:1px solid #e3e8eb;padding:14px 0}.result h3{margin:0 0 5px;font-size:1.07rem}.result p{margin:5px 0}.score{font-size:.82rem;color:#536a7c}.muted{color:#526575}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}footer{text-align:center;color:#647583;font-size:.8rem;padding:12px}button:focus-visible,input:focus-visible{outline:3px solid #efb449;outline-offset:2px}</style></head><body><header><h1>✦ SaintScope</h1><p>Les saints dans l'art et le patrimoine</p></header><main><section class="card"><h2>1. Ajouter une image</h2><p>Photographiez une statue, un vitrail ou un tableau. La photo reste sur votre appareil dans cette version.</p><div class="buttons"><label class="filebtn">📷 Caméra<input type="file" id="camera" accept="image/*" capture="environment"></label><label class="filebtn">🖼️ Galerie<input type="file" id="gallery" accept="image/*"></label></div><img id="preview" hidden alt="Image choisie"><p id="photoStatus" class="hint" aria-live="polite">Aucune photo sélectionnée.</p><div class="notice">La reconnaissance automatique par IA n'est pas encore disponible. Sélectionnez les symboles visibles pour obtenir des correspondances iconographiques, sans prétendre identifier automatiquement la photo.</div></section><section class="card"><h2>2. Quels symboles voyez-vous ?</h2><fieldset><legend>Attributs iconographiques</legend><div class="chips" id="chips"></div></fieldset><div class="buttons"><button class="btn secondary" id="reset">Effacer les critères</button></div></section><section class="card"><div class="topline"><h2>3. Saints possibles</h2><span class="hint" id="count"></span></div><input type="search" id="search" placeholder="Rechercher un nom ou un symbole" aria-label="Rechercher un saint"><div id="results" aria-live="polite"></div></section><section class="card"><h2>Historique local</h2><p class="hint">Les saints que vous enregistrez restent uniquement dans ce navigateur.</p><div id="history"></div><button class="btn secondary" id="clearHistory">Effacer l'historique</button></section><footer>SaintScope v0.2 • Guide de découverte, non une expertise d'attribution</footer></main><script src="app.js" defer></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173047">
+  <meta name="description" content="探索基督教艺术中的圣人与象征物">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>SaintScope — 圣人图像指南</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,sans-serif;color:#173047;background:#f6f4ef}*{box-sizing:border-box}body{margin:0}header{background:#173047;color:#fff;padding:28px 20px 22px;text-align:center}h1{margin:0;font-size:2rem;letter-spacing:.03em}header p{margin:8px 0 0;color:#d8e4ed}main{max-width:760px;margin:auto;padding:16px 16px 70px}.card{background:white;border-radius:18px;padding:20px;margin:0 0 16px;box-shadow:0 4px 18px #102b4210}h2{font-size:1.22rem;margin:0 0 12px}h3{font-size:1.07rem;margin:0 0 5px}p{line-height:1.55}.buttons{display:flex;flex-wrap:wrap;gap:10px}.btn,.filebtn{display:inline-block;background:#205a77;color:white;padding:12px 15px;border-radius:11px;border:0;font:inherit;font-weight:600;cursor:pointer;min-height:44px}.btn.secondary{background:#e9eff3;color:#173047}.btn:disabled{opacity:.55;cursor:not-allowed}.filebtn input{display:none}#preview{display:block;max-width:100%;max-height:380px;margin:16px auto;border-radius:12px}#preview[hidden]{display:none}.hint{color:#526575;font-size:.9rem}.notice{background:#fff5dc;padding:12px;border-radius:10px;font-size:.9rem}input[type=search]{width:100%;padding:13px;border:1px solid #b9c8d2;border-radius:10px;font:inherit}fieldset{border:0;padding:0;margin:14px 0}legend{font-weight:650;margin-bottom:8px}.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{background:#f2f6f8;border:1px solid #b9c8d2;border-radius:99px;padding:9px 12px;font:inherit;cursor:pointer;min-height:44px}.chip[aria-pressed=true]{background:#173047;color:white;border-color:#173047}.result{border-top:1px solid #e3e8eb;padding:14px 0}.result p{margin:5px 0}.score{font-size:.82rem;color:#536a7c}.muted{color:#526575}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}footer{text-align:center;color:#647583;font-size:.8rem;padding:12px}button:focus-visible,input:focus-visible{outline:3px solid #efb449;outline-offset:2px}#modelProgress{width:100%}.status{font-weight:650}.history-item{border-top:1px solid #e3e8eb;padding:12px 0}
+  </style>
+</head>
+<body>
+  <header><h1>✦ SaintScope</h1><p>探索艺术与文化遗产中的圣人形象 · v0.3 测试版</p></header>
+  <main>
+    <div id="updateNotice" class="notice" hidden>新版本已准备好。<button class="btn secondary" id="applyUpdate" type="button">更新并重新打开</button></div>
+    <section class="card" aria-labelledby="photoTitle">
+      <h2 id="photoTitle">1. 选择照片</h2>
+      <p>拍摄雕像、彩窗或绘画，或从相册选择照片。照片仅在本机预览。</p>
+      <div class="buttons">
+        <label class="filebtn">📷 拍照识别<input type="file" id="camera" accept="image/*" capture="environment"></label>
+        <label class="filebtn">🖼️ 从相册选择<input type="file" id="gallery" accept="image/*"></label>
+        <button class="btn" id="identify" type="button" disabled>开始识别</button>
+        <button class="btn secondary" id="cancelIdentify" type="button" disabled>取消识别</button>
+      </div>
+      <img id="preview" hidden alt="所选照片预览">
+      <p id="photoStatus" class="hint" aria-live="polite">尚未选择照片。</p>
+      <p id="modelStatus" class="hint" role="status" aria-live="polite">选择照片后可启动本地实验识别。首次需要下载约 162 MiB 模型资源，另有约 14 MB 运行组件；手机网络请留意流量。</p>
+      <progress id="modelProgress" max="100" value="0" hidden aria-label="模型下载进度"></progress>
+      <div class="notice">实验性候选排序不能确认圣人身份。模型在浏览器本地运行，照片不会上传；您也可以按下方象征物手动搜索。</div>
+    </section>
+    <section class="card" aria-labelledby="aiTitle">
+      <h2 id="aiTitle">可能的圣人</h2>
+      <p class="hint">最多显示三位参考候选。余弦相似度仅用于比较本页描述，不是准确率或识别概率。</p>
+      <p id="resolutionStatus" class="status" aria-live="polite">身份尚未确认。这不是确定的身份识别结果。</p>
+      <div id="aiResults" aria-live="polite"><p class="hint">尚未运行本地识别。</p></div>
+      <div id="aiActions" class="buttons"></div>
+      <div id="modelMetrics" class="hint"></div>
+    </section>
+    <section class="card" aria-labelledby="symbolTitle">
+      <h2 id="symbolTitle">2. 按象征物搜索</h2>
+      <fieldset><legend>圣人象征物检查：钥匙、剑、刑轮、龙、箭、头颅等</legend><div class="chips" id="chips"></div></fieldset>
+      <button class="btn secondary" id="reset" type="button">清除筛选条件</button>
+    </section>
+    <section class="card" aria-labelledby="resultTitle">
+      <div class="topline"><h2 id="resultTitle">3. 可能的圣人</h2><span class="hint" id="count"></span></div>
+      <input type="search" id="search" placeholder="搜索姓名或象征物" aria-label="搜索圣人姓名或象征物">
+      <div id="results" aria-live="polite"></div>
+    </section>
+    <section class="card" id="profileSection" aria-labelledby="profileTitle" hidden>
+      <h2 id="profileTitle">圣人资料</h2>
+      <div id="saintProfile"></div>
+    </section>
+    <section class="card" aria-labelledby="historyTitle">
+      <h2 id="historyTitle">我的识别记录</h2>
+      <p class="hint">每次完成的模型分析单独记录。只保存时间、候选、人工选择及状态，不保存原始照片。</p>
+      <p id="storageStatus" class="hint" aria-live="polite"></p>
+      <div id="recognitionHistory"></div>
+      <button class="btn secondary" id="clearRecognitions" type="button">清空全部识别记录</button>
+    </section>
+    <section class="card" aria-labelledby="favoritesTitle">
+      <h2 id="favoritesTitle">我的收藏</h2>
+      <p class="hint">旧版收藏继续保留在此浏览器中，与识别记录分开保存。</p>
+      <div id="history"></div>
+      <button class="btn secondary" id="clearHistory" type="button">清空收藏</button>
+    </section>
+    <section class="card" aria-labelledby="privacyTitle">
+      <h2 id="privacyTitle">隐私说明</h2>
+      <p>照片只在设备本地用于预览和分析，不上传照片进行识别。识别历史默认保存在本机，可删除单条或清空全部。首次使用本地 AI 需要下载模型资源；缓存被清理后可能需要重新下载。手动检索无需下载模型。</p>
+    </section>
+    <footer>SaintScope v0.3 测试版 · 内容供探索参考，不构成作品归属鉴定</footer>
+  </main>
+  <script src="saints.js" defer></script>
+  <script src="prompts.js" defer></script>
+  <script src="recognition-history.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>

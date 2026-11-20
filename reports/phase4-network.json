@@ -1,0 +1,157 @@
+{
+  "measuredAt": "2026-11-20T10:45:32.960Z",
+  "browser": "157.0.8103.79",
+  "cases": [
+    {
+      "id": "george-dragon",
+      "expected": "george",
+      "source": "https://commons.wikimedia.org/wiki/File:Stgeorge-dragon.jpg",
+      "license": "Public Domain Mark 1.0",
+      "imageBytes": 130052,
+      "wallMs": 11415,
+      "status": "本地分析已完成，身份尚未确认。",
+      "metrics": "模型初始化：7400 毫秒 · 本次推理：3892 毫秒 · 本次会话模型资源网络读取：162.3 MiB",
+      "candidates": [
+        "1. 圣乔治",
+        "2. 圣路加",
+        "3. 圣玛窦"
+      ],
+      "jsHeapBytes": 4458921,
+      "storage": {
+        "quota": 10909031274,
+        "usage": 171613034,
+        "usageDetails": {
+          "caches": 171611926,
+          "serviceWorkerRegistrations": 1108
+        }
+      }
+    }
+  ],
+  "consentDialogs": [
+    "本地 AI 首次运行可能下载约 162 MiB 模型资源，另需约 14 MB 运行组件。缓存命中时无需重复下载。照片只在本机处理。现在继续吗？"
+  ],
+  "externalRequests": [
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/preprocessor_config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/preprocessor_config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/onnx/model_quantized.onnx"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json"
+    },
+    {
+      "method": "GET",
+      "host": "us.aws.cdn.hf.co",
+      "path": "/xet-bridge-us/646760a4a48c2b6f0d5edaba/01a912938a0b4f4ebf05fe3e99082c4741e213915f590b2cd6929b6e639375a5"
+    },
+    {
+      "method": "GET",
+      "host": "huggingface.co",
+      "path": "/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/onnx/model_quantized.onnx"
+    },
+    {
+      "method": "GET",
+      "host": "us.aws.cdn.hf.co",
+      "path": "/xet-bridge-us/646760a4a48c2b6f0d5edaba/01a912938a0b4f4ebf05fe3e99082c4741e213915f590b2cd6929b6e639375a5"
+    }
+  ],
+  "limitations": [
+    "Main-thread JS heap excludes Worker and WASM memory; no reliable peak resident memory is available from this harness."
+  ],
+  "cancelTest": {
+    "cancelledStatus": "已取消。模型可能需要重新初始化；您仍可手动搜索象征物。",
+    "cancelledResults": "识别已取消。",
+    "retryStatus": "本地分析已完成，身份尚未确认。",
+    "retryMetrics": "模型初始化：2096 毫秒 · 本次推理：3840 毫秒 · 本次会话模型资源网络读取：0.0 MiB"
+  },
+  "failureTest": {
+    "status": "模型运行失败：Failed to fetch。请按象征物手动搜索。",
+    "manualResults": "24 条结果"
+  },
+  "pageErrors": [],
+  "nonGetRequests": [],
+  "localStaticBytes": {
+    "/SaintScope/": 21522,
+    "/SaintScope/saints.js": 24879,
+    "/SaintScope/recognition-history.js": 9828,
+    "/SaintScope/app.js": 54744,
+    "/SaintScope/prompts.js": 18309,
+    "/SaintScope/sw.js": 3324,
+    "/SaintScope/index.html": 7174,
+    "/SaintScope/ai-worker.bundle.js": 1100876,
+    "/SaintScope/manifest.webmanifest": 531,
+    "/SaintScope/icon.svg": 288,
+    "/SaintScope/icon-192.png": 9893,
+    "/SaintScope/icon-512.png": 26004,
+    "/SaintScope/apple-touch-icon.png": 9094,
+    "/SaintScope/vendor/ort-wasm-simd-threaded.mjs": 24381,
+    "/SaintScope/vendor/ort-wasm-simd-threaded.wasm": 14264838
+  }
+}

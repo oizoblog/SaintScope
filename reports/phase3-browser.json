@@ -1,0 +1,132 @@
+{
+  "at": "2026-11-20T10:03:58.471Z",
+  "checks": [
+    {
+      "name": "candidate defaults to unconfirmed",
+      "pass": true
+    },
+    {
+      "name": "no photo stored",
+      "pass": true
+    },
+    {
+      "name": "candidate correction",
+      "pass": true
+    },
+    {
+      "name": "profile opens",
+      "pass": true
+    },
+    {
+      "name": "none of these",
+      "pass": true
+    },
+    {
+      "name": "manual correction",
+      "pass": true
+    },
+    {
+      "name": "unknown outcome",
+      "pass": true
+    },
+    {
+      "name": "history reads after reload",
+      "pass": true
+    },
+    {
+      "name": "legacy favorite preserved",
+      "pass": true
+    },
+    {
+      "name": "single deletion",
+      "pass": true
+    },
+    {
+      "name": "cancel makes no record",
+      "pass": true
+    },
+    {
+      "name": "failure makes no record",
+      "pass": true
+    },
+    {
+      "name": "manual search survives failure",
+      "pass": true
+    },
+    {
+      "name": "retry creates one record",
+      "pass": true
+    },
+    {
+      "name": "clear all",
+      "pass": true
+    },
+    {
+      "name": "old favorites remain after clear",
+      "pass": true
+    },
+    {
+      "name": "no upload requests",
+      "pass": true
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/saints.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/prompts.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/recognition-history.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/app.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/ai-worker.bundle.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/saints.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/prompts.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/recognition-history.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/app.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/ai-worker.bundle.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/ai-worker.bundle.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:55857/SaintScope/ai-worker.bundle.js"
+    }
+  ],
+  "pageErrors": []
+}
