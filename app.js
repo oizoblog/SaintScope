@@ -19,6 +19,7 @@ let identifying = false;
 let loadMetrics = null;
 let activeRecognitionId = null;
 let modelConsentThisPage = false;
+let photoVersion = 0;
 
 function el(tag, text, cls) {
   const node = document.createElement(tag);
@@ -219,16 +220,39 @@ function renderRecognitionHistory() {
   }
 }
 
-function photoChanged(event) {
+async function photoChanged(event) {
   const file = event.target.files?.[0];
   if (!file) return;
-  if (!file.type.startsWith('image/')) {
-    $('photoStatus').textContent = '请选择有效的图片文件。';
-    return;
-  }
+  const version = ++photoVersion;
   if (identifying) cancelIdentification();
   if (photoURL) URL.revokeObjectURL(photoURL);
+  photoURL = null;
   activeRecognitionId = null;
+  selectedFile = null;
+  $('preview').hidden = true;
+  $('preview').src = '';
+  $('identify').disabled = true;
+  $('aiResults').replaceChildren(el('p', '尚未运行本地识别。', 'hint'));
+  $('aiActions').replaceChildren();
+  updateResolutionStatus();
+  renderResults();
+  event.target.value = '';
+  const reject = message => {
+    $('photoStatus').textContent = message;
+    $('modelStatus').textContent = `${message}您仍可手动搜索象征物。`;
+  };
+  if (Number.isFinite(file.size) && (file.size <= 0 || file.size > ImageGuard.MAX_BYTES)) {
+    return reject(file.size <= 0 ? '图片文件为空或无效。' : '图片文件过大（上限为 12 MiB）。请在本机缩小照片后重试。');
+  }
+  $('photoStatus').textContent = '正在检查图片格式和尺寸…';
+  try {
+    const issue = await ImageGuard.validate(file);
+    if (version !== photoVersion) return;
+    if (issue) return reject(issue);
+  } catch {
+    if (version !== photoVersion) return;
+    return reject('无法读取图片文件。请换一张照片后重试。');
+  }
   selectedFile = file;
   photoURL = URL.createObjectURL(file);
   $('preview').src = photoURL;
@@ -237,11 +261,6 @@ function photoChanged(event) {
   $('photoStatus').textContent = `已选择照片：${file.name}。请在下方选择可见的象征物。`;
   $('modelStatus').textContent = '照片已就绪。点击“开始识别”后才会加载模型。';
   $('modelMetrics').textContent = '';
-  $('aiResults').replaceChildren(el('p', '尚未运行本地识别。', 'hint'));
-  $('aiActions').replaceChildren();
-  updateResolutionStatus();
-  renderResults();
-  event.target.value = '';
 }
 
 function setIdentifying(value) {

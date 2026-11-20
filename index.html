@@ -20,8 +20,8 @@
       <h2 id="photoTitle">1. 选择照片</h2>
       <p>拍摄雕像、彩窗或绘画，或从相册选择照片。照片仅在本机预览。</p>
       <div class="buttons">
-        <label class="filebtn">📷 拍照识别<input type="file" id="camera" accept="image/*" capture="environment"></label>
-        <label class="filebtn">🖼️ 从相册选择<input type="file" id="gallery" accept="image/*"></label>
+        <label class="filebtn">📷 拍照识别<input type="file" id="camera" accept="image/jpeg,image/png,image/webp" capture="environment"></label>
+        <label class="filebtn">🖼️ 从相册选择<input type="file" id="gallery" accept="image/jpeg,image/png,image/webp"></label>
         <button class="btn" id="identify" type="button" disabled>开始识别</button>
         <button class="btn secondary" id="cancelIdentify" type="button" disabled>取消识别</button>
       </div>
@@ -76,6 +76,7 @@
   <script src="saints.js" defer></script>
   <script src="prompts.js" defer></script>
   <script src="recognition-history.js" defer></script>
+  <script src="image-guard.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>

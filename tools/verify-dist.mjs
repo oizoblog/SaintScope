@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const dist = join(root,'dist');
 const required = [
-  'index.html','app.js','saints.js','prompts.js','recognition-history.js',
+  'index.html','app.js','saints.js','prompts.js','recognition-history.js','image-guard.js',
   'ai-worker.bundle.js','sw.js','manifest.webmanifest',
   'icon.svg','icon-192.png','icon-512.png','apple-touch-icon.png',
   'THIRD_PARTY_NOTICES.md',

@@ -8,7 +8,13 @@ const vm = require('node:vm');
 const saints = require('../saints.js');
 const prompts = require('../prompts.js');
 const RecognitionHistory = require('../recognition-history.js');
+const ImageGuard = require('../image-guard.js');
 const root = path.join(__dirname, '..');
+function testFile(name, width = 1, height = 1) {
+  const b = new Uint8Array([255,216,255,192,0,11,8,height >>> 8,height & 255,
+    width >>> 8,width & 255,1,1,17,0,255,218,0,8,1,1,0,0,63,0,0,255,217]);
+  return Object.assign(new Blob([b], {type:'image/jpeg'}), {name});
+}
 
 class Element {
   constructor(tag = 'div') {
@@ -24,7 +30,7 @@ class Element {
   replaceChildren(...children) { this.children = [...children]; }
   setAttribute(name, value) { this.attributes[name] = value; }
   addEventListener(name, handler) { this.listeners[name] = handler; }
-  dispatch(name, event = {}) { this.listeners[name]?.({target:this, ...event}); }
+  dispatch(name, event = {}) { return this.listeners[name]?.({target:this, ...event}); }
 }
 
 function app(initialHistory, options = {}) {
@@ -43,7 +49,7 @@ function app(initialHistory, options = {}) {
     emit(data) { this.onmessage?.({data}); }
   }
   const context = {
-    SAINTS: saints, SAINT_PROMPTS: prompts, RecognitionHistory, Worker: TestWorker,
+    SAINTS: saints, SAINT_PROMPTS: prompts, RecognitionHistory, ImageGuard, Worker: TestWorker,
     document: {getElementById:id => elements[id], createElement:tag => new Element(tag)},
     localStorage: {
       getItem:key => { if (options.storageUnavailable) throw Error('storage unavailable'); return storage.get(key) ?? null; },
@@ -57,7 +63,7 @@ function app(initialHistory, options = {}) {
   return {elements, storage, storageWrites, revoked, workers};
 }
 
-test('24 records have stable unique IDs and unverified editorial status', () => {
+test('24 records have stable unique IDs and unverified editorial status', async () => {
   assert.equal(saints.length, 24);
   assert.equal(new Set(saints.map(s => s.id)).size, 24);
   for (const saint of saints) {
@@ -71,7 +77,7 @@ test('24 records have stable unique IDs and unverified editorial status', () => 
   }
 });
 
-test('Chinese page, manifest and offline shell contain the new data file', () => {
+test('Chinese page, manifest and offline shell contain the new data file', async () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8'));
   const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
@@ -83,9 +89,11 @@ test('Chinese page, manifest and offline shell contain the new data file', () =>
   assert.ok(sw.includes("'./saints.js'"));
   assert.ok(html.indexOf('saints.js') < html.indexOf('app.js'));
   assert.match(html, /id="aiActionFeedback"[^>]*aria-live="polite"/);
+  assert.ok(html.indexOf('image-guard.js') < html.indexOf('app.js'));
+  assert.ok(sw.includes("'./image-guard.js'"));
 });
 
-test('symbol filtering, name search and reset still work', () => {
+test('symbol filtering, name search and reset still work', async () => {
   const {elements} = app();
   assert.equal(elements.count.textContent, '24 条结果');
   const key = elements.chips.children.find(chip => chip.textContent === '钥匙');
@@ -101,7 +109,7 @@ test('symbol filtering, name search and reset still work', () => {
   assert.equal(elements.search.value, '');
 });
 
-test('legacy French-name history remains visible and saves stable IDs', () => {
+test('legacy French-name history remains visible and saves stable IDs', async () => {
   const {elements, storage} = app(['Saint Pierre']);
   assert.equal(elements.history.children[0].textContent, '圣彼得');
   const peter = elements.results.children.find(item => item.children[0].textContent === '圣彼得');
@@ -111,17 +119,64 @@ test('legacy French-name history remains visible and saves stable IDs', () => {
   assert.equal(storage.has('saintscope-history'), false);
 });
 
-test('photo preview stays local and revokes the previous object URL', () => {
+test('photo preview stays local and revokes the previous object URL', async () => {
   const {elements, revoked} = app();
-  elements.gallery.dispatch('change', {target:{files:[{name:'one.jpg',type:'image/jpeg'}],value:'one.jpg'}});
+  await elements.gallery.dispatch('change', {target:{files:[testFile('one.jpg')],value:'one.jpg'}});
   assert.equal(elements.preview.src, 'blob:one.jpg');
   assert.equal(elements.preview.hidden, false);
-  elements.camera.dispatch('change', {target:{files:[{name:'two.jpg',type:'image/jpeg'}],value:'two.jpg'}});
+  await elements.camera.dispatch('change', {target:{files:[testFile('two.jpg')],value:'two.jpg'}});
   assert.deepEqual(revoked, ['blob:one.jpg']);
   assert.equal(elements.preview.src, 'blob:two.jpg');
 });
 
-test('English prompts cover every stable saint ID with distinct visual descriptions', () => {
+test('oversized and high pixel photos are rejected before preview or model loading', async () => {
+  const {elements, workers, revoked, storage} = app();
+  await elements.gallery.dispatch('change', {target:{files:[testFile('old.jpg')],value:'old.jpg'}});
+  await elements.gallery.dispatch('change', {target:{files:[{name:'huge.jpg',size:ImageGuard.MAX_BYTES + 1}],value:'huge.jpg'}});
+  assert.deepEqual(revoked, ['blob:old.jpg']);
+  assert.equal(elements.preview.hidden, true);
+  assert.equal(elements.identify.disabled, true);
+  assert.match(elements.photoStatus.textContent, /12 MiB/);
+  const file = testFile('wide.jpg', 5000, 2000);
+  await elements.gallery.dispatch('change', {target:{files:[file],value:'wide.jpg'}});
+  assert.equal(elements.preview.hidden, true);
+  assert.equal(elements.identify.disabled, true);
+  assert.match(elements.photoStatus.textContent, /4096/);
+  elements.identify.dispatch('click');
+  assert.equal(workers.length, 0);
+  assert.equal(storage.has(RecognitionHistory.KEY), false);
+  assert.equal(elements.count.textContent, '24 条结果');
+});
+
+test('file header controls upload acceptance before any worker starts', async () => {
+  const {elements, workers} = app();
+  const svg = Object.assign(new Blob(['<svg width="50000" height="50000"></svg>'], {type:'image/svg+xml'}), {name:'large.svg'});
+  await elements.gallery.dispatch('change', {target:{files:[svg],value:'large.svg'}});
+  assert.equal(elements.preview.hidden, true);
+  assert.equal(elements.identify.disabled, true);
+  assert.match(elements.photoStatus.textContent, /仅支持 JPEG/);
+  assert.equal(workers.length, 0);
+  const mislabeled = testFile('mislabeled.jpg');
+  const accepted = Object.assign(new Blob([mislabeled], {type:'image/png'}), {name:'mislabeled.jpg'});
+  await elements.gallery.dispatch('change', {target:{files:[accepted],value:'mislabeled.jpg'}});
+  assert.equal(elements.preview.hidden, false);
+  assert.equal(elements.identify.disabled, false);
+});
+
+test('a slow image check cannot replace a newer photo selection', async () => {
+  const {elements} = app();
+  let finishRead;
+  const slow = {name:'slow.png',type:'image/png',size:24,arrayBuffer:() => new Promise(resolve => { finishRead = resolve; })};
+  const pending = elements.gallery.dispatch('change', {target:{files:[slow],value:'slow.png'}});
+  await elements.gallery.dispatch('change', {target:{files:[testFile('new.jpg')],value:'new.jpg'}});
+  finishRead(new Uint8Array(24).buffer);
+  await pending;
+  assert.equal(elements.preview.src, 'blob:new.jpg');
+  assert.equal(elements.identify.disabled, false);
+  assert.match(elements.photoStatus.textContent, /new.jpg/);
+});
+
+test('English prompts cover every stable saint ID with distinct visual descriptions', async () => {
   assert.equal(prompts.length, saints.length);
   assert.deepEqual(new Set(prompts.map(item => item.id)), new Set(saints.map(item => item.id)));
   for (const item of prompts) {
@@ -132,10 +187,10 @@ test('English prompts cover every stable saint ID with distinct visual descripti
   }
 });
 
-test('model starts only after click, reuses worker and renders at most three ranked candidates', () => {
+test('model starts only after click, reuses worker and renders at most three ranked candidates', async () => {
   const {elements, workers} = app();
   assert.equal(workers.length, 0);
-  elements.gallery.dispatch('change', {target:{files:[{name:'photo.jpg',type:'image/jpeg'}],value:'photo.jpg'}});
+  await elements.gallery.dispatch('change', {target:{files:[testFile('photo.jpg')],value:'photo.jpg'}});
   elements.identify.dispatch('click');
   assert.equal(workers.length, 1);
   assert.equal(workers[0].options.type, 'module');
@@ -155,9 +210,9 @@ test('model starts only after click, reuses worker and renders at most three ran
   assert.equal(workers.length, 1);
 });
 
-test('cancellation terminates the worker and ignores a late result', () => {
+test('cancellation terminates the worker and ignores a late result', async () => {
   const {elements, workers} = app();
-  elements.camera.dispatch('change', {target:{files:[{name:'photo.jpg',type:'image/jpeg'}],value:'photo.jpg'}});
+  await elements.camera.dispatch('change', {target:{files:[testFile('photo.jpg')],value:'photo.jpg'}});
   elements.identify.dispatch('click');
   const old = workers[0];
   elements.cancelIdentify.dispatch('click');
@@ -168,9 +223,9 @@ test('cancellation terminates the worker and ignores a late result', () => {
   assert.equal(workers.length, 2);
 });
 
-test('download progress and model errors leave manual search available', () => {
+test('download progress and model errors leave manual search available', async () => {
   const {elements, workers} = app();
-  elements.gallery.dispatch('change', {target:{files:[{name:'photo.jpg',type:'image/jpeg'}],value:'photo.jpg'}});
+  await elements.gallery.dispatch('change', {target:{files:[testFile('photo.jpg')],value:'photo.jpg'}});
   elements.identify.dispatch('click');
   workers[0].emit({type:'progress',percent:37,networkBytes:1048576});
   assert.equal(elements.modelProgress.value, 37);
@@ -181,24 +236,24 @@ test('download progress and model errors leave manual search available', () => {
   assert.equal(elements.count.textContent, '24 条结果');
 });
 
-test('declining model download starts no worker or recognition record', () => {
+test('declining model download starts no worker or recognition record', async () => {
   const {elements, workers, storage} = app(null, {confirm:false});
-  elements.gallery.dispatch('change', {target:{files:[{name:'test.jpg',type:'image/jpeg'}],value:'test.jpg'}});
+  await elements.gallery.dispatch('change', {target:{files:[testFile('test.jpg')],value:'test.jpg'}});
   elements.identify.dispatch('click');
   assert.equal(workers.length, 0);
   assert.equal(storage.has(RecognitionHistory.KEY), false);
   assert.match(elements.modelStatus.textContent, /已取消模型下载/);
 });
 
-function finishModel(elements, workers, candidates = [{id:'peter',score:0.41,cueZh:'钥匙'},{id:'paul',score:0.32,cueZh:'剑'}]) {
-  elements.gallery.dispatch('change', {target:{files:[{name:'test.jpg',type:'image/jpeg'}],value:'test.jpg'}});
+async function finishModel(elements, workers, candidates = [{id:'peter',score:0.41,cueZh:'钥匙'},{id:'paul',score:0.32,cueZh:'剑'}]) {
+  await elements.gallery.dispatch('change', {target:{files:[testFile('test.jpg')],value:'test.jpg'}});
   elements.identify.dispatch('click');
   workers.at(-1).emit({type:'result',candidates,metrics:{inferenceMs:100,networkBytes:200}});
 }
 
-test('each completed model run is unconfirmed and stores IDs without a photo', () => {
+test('each completed model run is unconfirmed and stores IDs without a photo', async () => {
   const {elements, workers, storage} = app(['Saint Pierre']);
-  finishModel(elements, workers);
+  await finishModel(elements, workers);
   const records = JSON.parse(storage.get(RecognitionHistory.KEY));
   assert.equal(records.length, 1);
   assert.equal(records[0].status, 'unconfirmed');
@@ -213,9 +268,9 @@ test('each completed model run is unconfirmed and stores IDs without a photo', (
   assert.equal(elements.history.children[0].textContent, '圣彼得');
 });
 
-test('candidate confirmation and changed choice record correction without editorial verification', () => {
+test('candidate confirmation and changed choice record correction without editorial verification', async () => {
   const {elements, workers, storage} = app();
-  finishModel(elements, workers);
+  await finishModel(elements, workers);
   const first = elements.aiResults.children[0].children.find(child => child.textContent === '确认是这位圣人');
   first.dispatch('click');
   let record = JSON.parse(storage.get(RecognitionHistory.KEY))[0];
@@ -234,9 +289,9 @@ test('candidate confirmation and changed choice record correction without editor
   assert.equal(elements.saintProfile.children[0].textContent, '圣保罗');
 });
 
-test('none of these, manual search correction and unknown remain separate outcomes', () => {
+test('none of these, manual search correction and unknown remain separate outcomes', async () => {
   const {elements, workers, storage} = app();
-  finishModel(elements, workers);
+  await finishModel(elements, workers);
   elements.aiActions.children.find(child => child.textContent === '都不是').dispatch('click');
   let record = JSON.parse(storage.get(RecognitionHistory.KEY))[0];
   assert.equal(record.status, 'uncertain');
@@ -256,9 +311,9 @@ test('none of these, manual search correction and unknown remain separate outcom
   assert.equal(record.confirmedId, null);
 });
 
-test('action feedback is immediate, idempotent, restored, and reset for a new photo', () => {
+test('action feedback is immediate, idempotent, restored, and reset for a new photo', async () => {
   const {elements, workers, storage, storageWrites} = app();
-  finishModel(elements, workers);
+  await finishModel(elements, workers);
   assert.equal(elements.aiActionFeedback.hidden, true);
   const noneButton = elements.aiActions.children[0];
   noneButton.dispatch('click');
@@ -298,7 +353,7 @@ test('action feedback is immediate, idempotent, restored, and reset for a new ph
   const reloaded = app(null, {initialRecognitions:records});
   assert.equal(reloaded.elements.aiActionFeedback.textContent, '已标记『无法确定』，识别结果尚未确认。');
   assert.equal(reloaded.elements.aiActions.children[2].disabled, true);
-  reloaded.elements.gallery.dispatch('change', {target:{files:[{name:'next.jpg',type:'image/jpeg'}],value:'next.jpg'}});
+  await reloaded.elements.gallery.dispatch('change', {target:{files:[testFile('next.jpg')],value:'next.jpg'}});
   assert.equal(reloaded.elements.aiActionFeedback.hidden, true);
   assert.equal(reloaded.elements.aiActions.children.length, 0);
   reloaded.elements.identify.dispatch('click');
@@ -309,10 +364,10 @@ test('action feedback is immediate, idempotent, restored, and reset for a new ph
   assert.equal(JSON.parse(reloaded.storage.get(RecognitionHistory.KEY)).length, 2);
 });
 
-test('recognition history reads, deletes one, clears all, and preserves old favorites', () => {
+test('recognition history reads, deletes one, clears all, and preserves old favorites', async () => {
   const {elements, workers, storage} = app(['Saint Pierre']);
-  finishModel(elements, workers);
-  finishModel(elements, workers);
+  await finishModel(elements, workers);
+  await finishModel(elements, workers);
   assert.equal(elements.recognitionHistory.children.length, 2);
   assert.equal(JSON.parse(storage.get(RecognitionHistory.KEY)).length, 2);
   elements.recognitionHistory.children[0].children.find(child => child.textContent === '删除这条记录').dispatch('click');
@@ -323,9 +378,9 @@ test('recognition history reads, deletes one, clears all, and preserves old favo
   assert.equal(elements.history.children[0].textContent, '圣彼得');
 });
 
-test('cancel and failure create no record; retry creates one', () => {
+test('cancel and failure create no record; retry creates one', async () => {
   const {elements, workers, storage} = app();
-  elements.gallery.dispatch('change', {target:{files:[{name:'test.jpg',type:'image/jpeg'}],value:'test.jpg'}});
+  await elements.gallery.dispatch('change', {target:{files:[testFile('test.jpg')],value:'test.jpg'}});
   elements.identify.dispatch('click');
   const cancelled = workers[0];
   elements.cancelIdentify.dispatch('click');
@@ -339,10 +394,10 @@ test('cancel and failure create no record; retry creates one', () => {
   assert.equal(JSON.parse(storage.get(RecognitionHistory.KEY)).length, 1);
 });
 
-test('unavailable or full storage keeps temporary records and shows a warning', () => {
+test('unavailable or full storage keeps temporary records and shows a warning', async () => {
   for (const options of [{storageUnavailable:true},{storageFull:true}]) {
     const {elements, workers, storage} = app(null, options);
-    finishModel(elements, workers);
+    await finishModel(elements, workers);
     assert.equal(elements.recognitionHistory.children.length, 1);
     assert.match(elements.storageStatus.textContent, /关闭后可能丢失/);
     assert.equal(storage.has(RecognitionHistory.KEY), false);

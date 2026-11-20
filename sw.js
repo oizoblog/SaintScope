@@ -1,7 +1,7 @@
-const CACHE = 'saintscope-v03-ai6';
+const CACHE = 'saintscope-v03-ai8';
 const ASSETS = [
   './', './index.html', './saints.js', './prompts.js', './recognition-history.js',
-  './app.js', './ai-worker.bundle.js', './manifest.webmanifest', './icon.svg',
+  './image-guard.js', './app.js', './ai-worker.bundle.js', './manifest.webmanifest', './icon.svg',
   './icon-192.png', './icon-512.png', './apple-touch-icon.png',
 ];
 
@@ -19,7 +19,7 @@ self.addEventListener('message', event => {
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(key => key !== CACHE && key.startsWith('saintscope-v')).map(key => caches.delete(key)));
+    await Promise.all(keys.filter(key => key !== CACHE && /^saintscope-v\d+-ai\d+$/.test(key)).map(key => caches.delete(key)));
     await self.clients.claim();
   })());
 });

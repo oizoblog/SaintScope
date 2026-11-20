@@ -1,4 +1,5 @@
 import { AutoProcessor, AutoTokenizer, CLIPModel, RawImage, env } from '@huggingface/transformers';
+import ImageGuard from './image-guard.js';
 
 const MODEL = 'Xenova/clip-vit-base-patch32';
 const REVISION = '4c1807b705b1d015fb032789cc4d221b23025a6f';
@@ -78,11 +79,15 @@ self.onmessage = async event => {
   busy = true;
   try {
     if (!(file instanceof Blob) || !Array.isArray(entries) || !entries.length) throw Error('输入无效');
+    const issue = await ImageGuard.validate(file);
+    if (issue) throw Error(issue);
+    const image = await RawImage.fromBlob(file);
+    const decodedIssue = ImageGuard.dimensionError(image.width, image.height);
+    if (decodedIssue) throw Error(decodedIssue);
     const {tokenizer, processor, model} = await loadModel();
     self.postMessage({type:'status',status:'inferencing'});
     const started = performance.now();
     const descriptions = entries.flatMap(entry => entry.prompts.map(([text, cueZh]) => ({id:entry.id,text,cueZh})));
-    const image = await RawImage.fromBlob(file);
     const textInputs = tokenizer(descriptions.map(item => item.text), {padding:true,truncation:true});
     const imageInputs = await processor(image);
     const output = await model({...textInputs,...imageInputs});
