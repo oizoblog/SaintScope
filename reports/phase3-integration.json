@@ -1,0 +1,59 @@
+{
+  "measuredAt": "2026-11-20T10:02:24.994Z",
+  "browser": "157.0.8103.79",
+  "cases": [
+    {
+      "id": "george-dragon",
+      "expected": "george",
+      "source": "https://commons.wikimedia.org/wiki/File:Stgeorge-dragon.jpg",
+      "license": "Public Domain Mark 1.0",
+      "imageBytes": 130052,
+      "wallMs": 7449,
+      "status": "本地分析已完成，身份尚未确认。",
+      "metrics": "模型初始化：5909 毫秒 · 本次推理：1433 毫秒 · 本次会话模型资源网络读取：162.3 MiB",
+      "candidates": [
+        "1. 圣乔治",
+        "2. 圣路加",
+        "3. 圣玛窦"
+      ],
+      "jsHeapBytes": 4555441,
+      "storage": {
+        "quota": 10908979057,
+        "usage": 171560817,
+        "usageDetails": {
+          "caches": 171560118,
+          "serviceWorkerRegistrations": 699
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Main-thread JS heap excludes Worker and WASM memory; no reliable peak resident memory is available from this harness."
+  ],
+  "cancelTest": {
+    "cancelledStatus": "已取消。模型可能需要重新初始化；您仍可手动搜索象征物。",
+    "cancelledResults": "识别已取消。",
+    "retryStatus": "本地分析已完成，身份尚未确认。",
+    "retryMetrics": "模型初始化：890 毫秒 · 本次推理：1340 毫秒 · 本次会话模型资源网络读取：0.0 MiB"
+  },
+  "failureTest": {
+    "status": "模型运行失败：Failed to fetch。请按象征物手动搜索。",
+    "manualResults": "24 条结果"
+  },
+  "pageErrors": [],
+  "nonGetRequests": [],
+  "localStaticBytes": {
+    "/SaintScope/": 19395,
+    "/SaintScope/saints.js": 24879,
+    "/SaintScope/recognition-history.js": 9492,
+    "/SaintScope/app.js": 50043,
+    "/SaintScope/prompts.js": 18309,
+    "/SaintScope/sw.js": 2097,
+    "/SaintScope/index.html": 6465,
+    "/SaintScope/ai-worker.bundle.js": 1100782,
+    "/SaintScope/manifest.webmanifest": 345,
+    "/SaintScope/icon.svg": 288,
+    "/SaintScope/vendor/ort-wasm-simd-threaded.mjs": 24381,
+    "/SaintScope/vendor/ort-wasm-simd-threaded.wasm": 14264838
+  }
+}

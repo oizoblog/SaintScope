@@ -1,0 +1,32 @@
+name: SaintScope CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - feature/v0.3-zh-local-ai-clean
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: node tools/verify-dist.mjs
+      - run: |
+          node --check app.js
+          node --check ai-worker.js
+          node --check image-guard.js
+          node --check sw.js
+          node --check tools/prepare-dist.mjs

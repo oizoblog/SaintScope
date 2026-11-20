@@ -1,0 +1,33 @@
+{
+  "at": "2026-11-20T10:44:15.434Z",
+  "url": "http://127.0.0.1:57020/SaintScope/",
+  "swResponses": [
+    "ai4",
+    "ai5"
+  ],
+  "before": {
+    "controlled": true,
+    "caches": [
+      "saintscope-v03-ai4",
+      "transformers-cache"
+    ]
+  },
+  "waiting": {
+    "caches": [
+      "saintscope-v03-ai4",
+      "transformers-cache",
+      "saintscope-v03-ai5"
+    ],
+    "noticeVisible": true
+  },
+  "after": {
+    "caches": [
+      "transformers-cache",
+      "saintscope-v03-ai5"
+    ],
+    "noticeHidden": true,
+    "controlled": true,
+    "waiting": null,
+    "active": "activated"
+  }
+}

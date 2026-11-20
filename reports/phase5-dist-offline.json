@@ -1,0 +1,302 @@
+{
+  "at": "2026-11-20T13:21:26.997Z",
+  "browser": "157.0.8103.79",
+  "url": "http://127.0.0.1:54735/SaintScope/",
+  "staticRoot": "dist",
+  "steps": [
+    {
+      "name": "first online open",
+      "shell": "✦ SaintScope",
+      "controlled": true,
+      "caches": [
+        "saintscope-v03-ai5"
+      ]
+    },
+    {
+      "name": "first model download",
+      "status": "本地分析已完成，身份尚未确认。",
+      "metrics": "模型初始化：8227 毫秒 · 本次推理：3920 毫秒 · 本次会话模型资源网络读取：162.3 MiB",
+      "candidates": [
+        "1. 圣乔治",
+        "2. 圣路加",
+        "3. 圣玛窦"
+      ],
+      "caches": [
+        "saintscope-v03-ai5",
+        "transformers-cache"
+      ],
+      "modelCacheFiles": [
+        "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/preprocessor_config.json",
+        "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json",
+        "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json",
+        "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json",
+        "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/onnx/model_quantized.onnx",
+        "http://127.0.0.1:54735/SaintScope/vendor/ort-wasm-simd-threaded.mjs",
+        "http://127.0.0.1:54735/SaintScope/vendor/ort-wasm-simd-threaded.wasm"
+      ]
+    },
+    {
+      "name": "offline reopen and manual search",
+      "shell": "✦ SaintScope",
+      "count": "1 条结果",
+      "controlled": true
+    },
+    {
+      "name": "offline AI after browser restart",
+      "status": "本地分析已完成，身份尚未确认。",
+      "metrics": "模型初始化：945 毫秒 · 本次推理：1423 毫秒 · 本次会话模型资源网络读取：0.0 MiB",
+      "candidates": [
+        "1. 圣乔治",
+        "2. 圣路加",
+        "3. 圣玛窦"
+      ]
+    },
+    {
+      "name": "model cache deleted",
+      "previousCaches": [
+        "saintscope-v03-ai5",
+        "transformers-cache"
+      ],
+      "caches": [
+        "saintscope-v03-ai5"
+      ]
+    },
+    {
+      "name": "offline AI after model cache deletion",
+      "status": "模型运行失败：离线模型资源不可用或缓存已清理；联网下载后再试。请按象征物手动搜索。",
+      "metrics": "",
+      "candidates": []
+    },
+    {
+      "name": "offline after clearing all caches",
+      "error": "Error: page.goto: net::ERR_FAILED at http://127.0.0.1:54735/SaintScope/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:54735/SaintScope/\", waiting until \"load\"\u001b[22m\n"
+    }
+  ],
+  "serverRequests": [
+    {
+      "url": "/SaintScope/",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/saints.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/prompts.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/recognition-history.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/manifest.webmanifest",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/sw.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/index.html",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/saints.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/prompts.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/recognition-history.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/ai-worker.bundle.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/manifest.webmanifest",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/icon.svg",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/icon-192.png",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/icon-512.png",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/apple-touch-icon.png",
+      "method": "GET"
+    },
+    {
+      "url": "/favicon.ico",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/sw.js",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET"
+    },
+    {
+      "url": "/favicon.ico",
+      "method": "GET"
+    },
+    {
+      "url": "/SaintScope/sw.js",
+      "method": "GET"
+    }
+  ],
+  "networkEvents": [
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/preprocessor_config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/preprocessor_config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/onnx/model_quantized.onnx"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/api/resolve-cache/models/Xenova/clip-vit-base-patch32/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer.json"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://us.aws.cdn.hf.co/xet-bridge-us/646760a4a48c2b6f0d5edaba/01a912938a0b4f4ebf05fe3e99082c4741e213915f590b2cd6929b6e639375a5"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/onnx/model_quantized.onnx"
+    },
+    {
+      "phase": "online",
+      "event": "request",
+      "url": "https://us.aws.cdn.hf.co/xet-bridge-us/646760a4a48c2b6f0d5edaba/01a912938a0b4f4ebf05fe3e99082c4741e213915f590b2cd6929b6e639375a5"
+    },
+    {
+      "phase": "offline-cleared-model",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json"
+    },
+    {
+      "phase": "offline-cleared-model",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/preprocessor_config.json"
+    },
+    {
+      "phase": "offline-cleared-model",
+      "event": "request",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/config.json"
+    },
+    {
+      "phase": "offline-cleared-model",
+      "event": "failed",
+      "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/4c1807b705b1d015fb032789cc4d221b23025a6f/tokenizer_config.json",
+      "error": "net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "phase": "offline-cleared-all",
+      "event": "failed",
+      "url": "http://127.0.0.1:54735/SaintScope/",
+      "error": "net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "phase": "offline-cleared-all",
+      "event": "failed",
+      "url": "http://127.0.0.1:54735/SaintScope/",
+      "error": "net::ERR_FAILED"
+    }
+  ]
+}
