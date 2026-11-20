@@ -28,12 +28,13 @@ class Element {
 }
 
 function app(initialHistory, options = {}) {
-  const ids = ['camera', 'gallery', 'search', 'reset', 'clearHistory', 'clearRecognitions', 'recognitionHistory', 'storageStatus', 'resolutionStatus', 'aiActions', 'aiTitle', 'saintProfile', 'profileSection', 'chips', 'count', 'results', 'history', 'preview', 'photoStatus', 'identify', 'cancelIdentify', 'modelStatus', 'modelProgress', 'aiResults', 'modelMetrics'];
+  const ids = ['camera', 'gallery', 'search', 'reset', 'clearHistory', 'clearRecognitions', 'recognitionHistory', 'storageStatus', 'resolutionStatus', 'aiActionFeedback', 'aiActions', 'aiTitle', 'saintProfile', 'profileSection', 'chips', 'count', 'results', 'history', 'preview', 'photoStatus', 'identify', 'cancelIdentify', 'modelStatus', 'modelProgress', 'aiResults', 'modelMetrics'];
   const elements = Object.fromEntries(ids.map(id => [id, new Element()]));
   const storage = new Map();
   if (initialHistory) storage.set('saintscope-history', JSON.stringify(initialHistory));
   if (options.initialRecognitions) storage.set(RecognitionHistory.KEY, JSON.stringify(options.initialRecognitions));
   const revoked = [];
+  const storageWrites = [];
   const workers = [];
   class TestWorker {
     constructor(url, options) { this.url = url; this.options = options; this.terminated = false; workers.push(this); }
@@ -46,14 +47,14 @@ function app(initialHistory, options = {}) {
     document: {getElementById:id => elements[id], createElement:tag => new Element(tag)},
     localStorage: {
       getItem:key => { if (options.storageUnavailable) throw Error('storage unavailable'); return storage.get(key) ?? null; },
-      setItem:(key,value) => { if (options.storageUnavailable || (options.storageFull && key === RecognitionHistory.KEY)) throw Error('quota'); storage.set(key,value); },
+      setItem:(key,value) => { if (options.storageUnavailable || (options.storageFull && key === RecognitionHistory.KEY)) throw Error('quota'); storage.set(key,value); storageWrites.push(key); },
       removeItem:key => { if (options.storageUnavailable) throw Error('storage unavailable'); storage.delete(key); }
     },
     URL: {createObjectURL:file => `blob:${file.name}`, revokeObjectURL:url => revoked.push(url)},
     navigator: {}, location: {protocol:'file:'}, confirm:() => options.confirm ?? true, alert:message => {throw Error(message)}
   };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'app.js'), 'utf8'), context);
-  return {elements, storage, revoked, workers};
+  return {elements, storage, storageWrites, revoked, workers};
 }
 
 test('24 records have stable unique IDs and unverified editorial status', () => {
@@ -81,6 +82,7 @@ test('Chinese page, manifest and offline shell contain the new data file', () =>
   }
   assert.ok(sw.includes("'./saints.js'"));
   assert.ok(html.indexOf('saints.js') < html.indexOf('app.js'));
+  assert.match(html, /id="aiActionFeedback"[^>]*aria-live="polite"/);
 });
 
 test('symbol filtering, name search and reset still work', () => {
@@ -252,6 +254,59 @@ test('none of these, manual search correction and unknown remain separate outcom
   assert.equal(record.status, 'uncertain');
   assert.equal(record.resolution, 'unknown');
   assert.equal(record.confirmedId, null);
+});
+
+test('action feedback is immediate, idempotent, restored, and reset for a new photo', () => {
+  const {elements, workers, storage, storageWrites} = app();
+  finishModel(elements, workers);
+  assert.equal(elements.aiActionFeedback.hidden, true);
+  const noneButton = elements.aiActions.children[0];
+  noneButton.dispatch('click');
+  assert.equal(elements.aiActionFeedback.textContent, '已标记『都不是』，身份仍未确定。');
+  assert.equal(elements.aiActionFeedback.hidden, false);
+  assert.equal(elements.aiActions.children[0].disabled, true);
+  const writes = storageWrites.length;
+  noneButton.dispatch('click');
+  assert.equal(storageWrites.length, writes);
+  let records = JSON.parse(storage.get(RecognitionHistory.KEY));
+  assert.equal(records.length, 1);
+  assert.equal(records[0].status, 'uncertain');
+  assert.equal(records[0].resolution, 'none-of-these');
+  assert.equal(records[0].confirmedId, null);
+  assert.deepEqual(records[0].candidates.map(candidate => candidate.id), ['peter', 'paul']);
+  assert.match(records[0].modelVersion, /clip-vit-base-patch32/);
+  assert.ok(!storage.get(RecognitionHistory.KEY).includes('test.jpg'));
+
+  const reopened = app(null, {initialRecognitions:records});
+  assert.equal(reopened.elements.aiActionFeedback.textContent, '已标记『都不是』，身份仍未确定。');
+  assert.equal(reopened.elements.aiActionFeedback.hidden, false);
+  assert.equal(reopened.elements.aiActions.children[0].disabled, true);
+  const unknownButton = reopened.elements.aiActions.children[2];
+  unknownButton.dispatch('click');
+  assert.equal(reopened.elements.aiActionFeedback.textContent, '已标记『无法确定』，识别结果尚未确认。');
+  assert.equal(reopened.elements.aiActions.children[2].disabled, true);
+  const reopenedWrites = reopened.storageWrites.length;
+  unknownButton.dispatch('click');
+  assert.equal(reopened.storageWrites.length, reopenedWrites);
+  records = JSON.parse(reopened.storage.get(RecognitionHistory.KEY));
+  assert.equal(records.length, 1);
+  assert.equal(records[0].status, 'uncertain');
+  assert.equal(records[0].resolution, 'unknown');
+  assert.equal(records[0].confirmedId, null);
+  assert.ok(!reopened.storage.get(RecognitionHistory.KEY).includes('test.jpg'));
+
+  const reloaded = app(null, {initialRecognitions:records});
+  assert.equal(reloaded.elements.aiActionFeedback.textContent, '已标记『无法确定』，识别结果尚未确认。');
+  assert.equal(reloaded.elements.aiActions.children[2].disabled, true);
+  reloaded.elements.gallery.dispatch('change', {target:{files:[{name:'next.jpg',type:'image/jpeg'}],value:'next.jpg'}});
+  assert.equal(reloaded.elements.aiActionFeedback.hidden, true);
+  assert.equal(reloaded.elements.aiActions.children.length, 0);
+  reloaded.elements.identify.dispatch('click');
+  assert.equal(reloaded.elements.aiActionFeedback.hidden, true);
+  reloaded.workers[0].emit({type:'result',candidates:[{id:'denis',score:0.3,cueZh:'头颅'}],metrics:{}});
+  assert.equal(reloaded.elements.aiActionFeedback.hidden, true);
+  assert.equal(reloaded.elements.aiActions.children[0].disabled, false);
+  assert.equal(JSON.parse(reloaded.storage.get(RecognitionHistory.KEY)).length, 2);
 });
 
 test('recognition history reads, deletes one, clears all, and preserves old favorites', () => {

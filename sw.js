@@ -1,4 +1,4 @@
-const CACHE = 'saintscope-v03-ai5';
+const CACHE = 'saintscope-v03-ai6';
 const ASSETS = [
   './', './index.html', './saints.js', './prompts.js', './recognition-history.js',
   './app.js', './ai-worker.bundle.js', './manifest.webmanifest', './icon.svg',

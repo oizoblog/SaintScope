@@ -1,5 +1,5 @@
 import { build } from 'esbuild';
-import { copyFileSync, mkdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { prepareDist } from './tools/prepare-dist.mjs';
 
 await build({
@@ -13,8 +13,18 @@ await build({
   legalComments:'none',
 });
 mkdirSync('vendor', {recursive:true});
-for (const name of ['ort-wasm-simd-threaded.mjs','ort-wasm-simd-threaded.wasm']) {
-  copyFileSync(`node_modules/onnxruntime-web/dist/${name}`, `vendor/${name}`);
+function copyVendor(source, target) {
+  const incoming = readFileSync(source);
+  if (existsSync(target)) {
+    const existing = readFileSync(target);
+    const same = source.endsWith('.wasm') ? existing.equals(incoming)
+      : existing.toString('utf8').replace(/\r\n/g, '\n') === incoming.toString('utf8').replace(/\r\n/g, '\n');
+    if (same) return;
+  }
+  copyFileSync(source, target);
 }
-copyFileSync('node_modules/@huggingface/transformers/LICENSE', 'vendor/TRANSFORMERS-LICENSE.txt');
+for (const name of ['ort-wasm-simd-threaded.mjs','ort-wasm-simd-threaded.wasm']) {
+  copyVendor(`node_modules/onnxruntime-web/dist/${name}`, `vendor/${name}`);
+}
+copyVendor('node_modules/@huggingface/transformers/LICENSE', 'vendor/TRANSFORMERS-LICENSE.txt');
 await prepareDist();

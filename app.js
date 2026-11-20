@@ -49,6 +49,12 @@ function statusLabel(record) {
 
 function updateResolutionStatus() {
   $('resolutionStatus').textContent = statusLabel(recognitionStore.get(activeRecognitionId) || {status:'unconfirmed'});
+  const resolution = recognitionStore.get(activeRecognitionId)?.resolution;
+  const feedback = resolution === 'none-of-these' ? '已标记『都不是』，身份仍未确定。'
+    : resolution === 'unknown' ? '已标记『无法确定』，识别结果尚未确认。' : '';
+  const feedbackNode = $('aiActionFeedback');
+  feedbackNode.hidden = !feedback;
+  feedbackNode.textContent = feedback;
 }
 
 function showProfile(id) {
@@ -76,8 +82,11 @@ function focusManualSearch() {
 
 function resolveActive(kind, id = null) {
   if (!activeRecognitionId || (id && !byId.has(id))) return;
+  const current = recognitionStore.get(activeRecognitionId);
+  if (!current || (current.resolution === kind && (kind === 'none-of-these' || kind === 'unknown'))) return;
   const result = recognitionStore.resolve(activeRecognitionId, kind, id);
   if (!result) return;
+  renderAiActions();
   updateResolutionStatus();
   renderRecognitionHistory();
   updateStorageStatus();
@@ -261,11 +270,16 @@ function cancelIdentification() {
 function renderAiActions() {
   const root = $('aiActions');
   root.replaceChildren();
-  if (!activeRecognitionId) return;
+  const record = recognitionStore.get(activeRecognitionId);
+  if (!record) return;
+  const noneButton = button('都不是', () => resolveActive('none-of-these'));
+  const unknownButton = button('无法确定', () => resolveActive('unknown'));
+  noneButton.disabled = record.resolution === 'none-of-these';
+  unknownButton.disabled = record.resolution === 'unknown';
   root.append(
-    button('都不是', () => resolveActive('none-of-these')),
+    noneButton,
     button('手动查找圣人', focusManualSearch),
-    button('无法确定', () => resolveActive('unknown'))
+    unknownButton
   );
 }
 
@@ -417,6 +431,13 @@ renderResults();
 renderHistory();
 renderRecognitionHistory();
 updateStorageStatus();
+const latestRecognition = recognitionStore.list()[0];
+if (latestRecognition) {
+  activeRecognitionId = latestRecognition.id;
+  renderCandidates(latestRecognition.candidates.map(candidate => ({id:candidate.id, score:candidate.similarity})));
+  updateResolutionStatus();
+  renderResults();
+}
 if (typeof window !== 'undefined') window.addEventListener('pagehide', () => {
   taskVersion++;
   stopWorker();
